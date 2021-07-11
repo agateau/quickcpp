@@ -100,7 +100,7 @@ def main():
 
         if args.live:
             subprocess.run(
-                f"echo {args.cpp_file} | entr -c '{build_script}'", shell=True
+                ["entr", "-c", build_script], input=args.cpp_file.encode("utf-8")
             )
         else:
             subprocess.run([build_script])
