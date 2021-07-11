@@ -2,7 +2,6 @@
 Quickly builds a standalone C++ file and runs the result.
 """
 import argparse
-import os
 import shlex
 import subprocess
 import sys
@@ -12,13 +11,6 @@ from tempfile import TemporaryDirectory
 
 DEFAULT_COMPILER = "c++"
 DEFAULT_FLAGS = "-Wall -fPIC -std=c++17 -g"
-
-
-def has_entr():
-    for path in os.environ["PATH"].split(os.path.pathsep):
-        if (Path(path) / "entr").exists():
-            return True
-    return False
 
 
 def get_package_flags(package):
@@ -88,9 +80,6 @@ def main():
 
     args = parser.parse_args()
 
-    if args.live and not has_entr():
-        parser.error("Can't find the `entr` tool. `entr` is required for live reload.")
-
     with TemporaryDirectory(prefix="quickcpp-") as t:
         build_script = Path(t) / "build.sh"
         with open(build_script, "wt") as f:
@@ -99,14 +88,15 @@ def main():
         build_script.chmod(0o700)
 
         if args.live:
-            subprocess.run(
-                ["entr", "-c", build_script], input=args.cpp_file.encode("utf-8")
-            )
+            try:
+                subprocess.run(
+                    ["entr", "-c", build_script], input=args.cpp_file.encode("utf-8")
+                )
+            except FileNotFoundError:
+                print(
+                    "Can't find the `entr` tool. `entr` is required for live reload.",
+                    file=sys.stderr,
+                )
+                sys.exit(1)
         else:
             subprocess.run([build_script])
-
-    return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())
