@@ -24,7 +24,9 @@ Hello world!
 
 ### Using other libraries
 
-Want to experiment something with QtWidgets? You can specify any installed pkg-config compliant packages using `-p <package>`:
+Want to experiment something with [QtWidgets][]? You can specify any installed pkg-config compliant packages using `-p <package>`:
+
+[QtWidgets]: https://doc.qt.io/qt-5.15/qtwidgets-index.html
 
 ```
 $ cat examples/qt.cpp 
@@ -46,6 +48,8 @@ $ quickcpp -p Qt5Widgets examples/qt.cpp
 c++ examples/qt.cpp -Wall -fPIC -std=c++17 -g -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/x86_64-linux-gnu/qt5 -lQt5Widgets -lQt5Gui -lQt5Core
 - Running ----------------------
 ```
+
+You should see a window like this one:
 
 ![qt.png](examples/qt.png)
 
