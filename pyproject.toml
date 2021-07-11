@@ -2,8 +2,11 @@
 name = "quickcpp"
 version = "0.1.0"
 description = "Quickly builds a standalone C++ file and runs the result."
-authors = ["Aurelien Gateau <mail@agateau.com>"]
+readme = "README.md"
+authors = ["Aurélien Gâteau <mail@agateau.com>"]
 license = "Apache 2.0"
+homepage = "https://github.com/agateau/quickcpp"
+repository = "https://github.com/agateau/quickcpp"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Console",
