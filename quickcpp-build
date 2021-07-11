@@ -1,9 +1,0 @@
-#!/bin/bash
-set -euo pipefail
-
-echo "- Building ---------------------"
-cmd="$compiler $src $build_flags"
-echo $cmd
-$cmd
-echo "- Running ----------------------"
-./a.out

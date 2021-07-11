@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "quickcpp"
+version = "0.1.0"
+description = "Quickly builds a standalone C++ file and runs the result."
+authors = ["Aurelien Gateau <mail@agateau.com>"]
+license = "Apache 2.0"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers"
+]
+
+[tool.poetry.dependencies]
+python = "^3.6.2"
+
+[tool.poetry.dev-dependencies]
+black = "^21.6b0"
+
+[tool.poetry.scripts]
+quickcpp = "quickcpp.main:main"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
