@@ -1,0 +1,104 @@
+#!/bin/bash
+set -euo pipefail
+
+PROGNAME=$(basename $0)
+BUILD_CMD=$(dirname $0)/quickcpp-build
+
+DEFAULT_COMPILER=c++
+DEFAULT_FLAGS="-Wall -fPIC -std=c++17 -g"
+
+die() {
+    echo "$PROGNAME: $*" >&2
+    exit 1
+}
+
+usage() {
+    if [ "$*" != "" ] ; then
+        echo "Error: $*"
+        echo
+    fi
+    cat << EOF
+Usage: $PROGNAME [OPTION ...] [cpp_file]
+
+Quickly builds a standalone C++ file and runs the result.
+
+Options:
+  -h, --help                 Display this usage message and exit.
+  -p, --pkg [pkg_name]       pkg-config package to build with.
+                             Any package listed by \`pkg-config --list-all\` can
+                             be used. Can appear multiple times.
+  -l, --live                 Automatically rebuild and rerun the executable when
+                             the source file changes. Requires the \`entr\`
+                             tool.
+  -c, --compiler [compiler]  Compiler to use (defaults to \`$DEFAULT_COMPILER\`)
+  --flags [compiler-flags]   Compiler flags to use in addition to the default
+                             flags. The default flags are:
+                                 $DEFAULT_FLAGS
+EOF
+    exit 1
+}
+
+main() {
+    src=""
+    compiler="$DEFAULT_COMPILER"
+    build_flags="$DEFAULT_FLAGS"
+    pkgs=""
+    live=false
+
+    while [ $# -gt 0 ] ; do
+        case "$1" in
+        -h|--help)
+            usage
+            ;;
+        -p|--pkg)
+            pkgs="$pkgs $2"
+            shift
+            ;;
+        -c|--compiler)
+            compiler="$2"
+            shift
+            ;;
+        --flags)
+            build_flags="$build_flags $2"
+            shift
+            ;;
+        -l|--live)
+            live=true
+            ;;
+        -*)
+            usage "Unknown option $1"
+            ;;
+        *)
+            if [ -z "$src" ] ; then
+                src="$1"
+            else
+                usage "Too many arguments"
+            fi
+            ;;
+        esac
+        shift
+    done
+
+    if [ -z "$src" ] ; then
+        usage "Not enough arguments"
+    fi
+
+    if $live && ! which entr > /dev/null 2>&1 ; then
+        die "Can't find the \`entr\` tool. \`entr\` is required for live reload."
+    fi
+
+    for pkg in $pkgs ; do
+        build_flags="$build_flags $(pkg-config --cflags --libs $pkg)"
+    done
+
+    # Start the build
+    export compiler src build_flags
+    if $live ; then
+        echo "$src" | entr -c "$BUILD_CMD"
+    else
+        "$BUILD_CMD"
+    fi
+    exit 0
+}
+
+main $@
